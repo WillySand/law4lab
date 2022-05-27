@@ -39,7 +39,7 @@ class MahasiswaAPIViewWithID(APIView):
         except:
             env = environ.Env()
             environ.Env.read_env()
-            my_secret = (os.environ.get("MY_SECRET", '1111')
+            my_secret = (os.environ.get("MY_SECRET", '1111'))
             return Response({"res": my_secret }, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, npm, *args, **kwargs):
