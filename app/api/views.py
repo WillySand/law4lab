@@ -5,6 +5,8 @@ from rest_framework import status
 from rest_framework import permissions
 from app.models import *
 from .serializers import MahasiswaSerializer
+import os
+import environ
 
 class MahasiswaAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -35,7 +37,10 @@ class MahasiswaAPIViewWithID(APIView):
             serializer = MahasiswaSerializer(mahasiswa)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except:
-            return Response({"res": "npm does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+            env = environ.Env()
+            environ.Env.read_env()
+            my_secret = (os.environ.get("MY_SECRET", '1111')
+            return Response({"res": "npm does not exist","secret":my_secret}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, npm, *args, **kwargs):
         try:
