@@ -7,6 +7,8 @@ from app.models import *
 from .serializers import MahasiswaSerializer
 import os
 import environ
+import json
+import requests
 
 class MahasiswaAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -39,8 +41,16 @@ class MahasiswaAPIViewWithID(APIView):
         except:
             env = environ.Env()
             environ.Env.read_env()
-            my_secret = (os.environ.get("MY_SECRET", '1111'))
-            return Response({"res": my_secret }, status=status.HTTP_400_BAD_REQUEST)
+            api_key = (os.environ.get("APIKEY_LOG", '1111'))
+            url = "https://b5e73130-42e3-4c1a-9149-bc23fd8b4ed1-es.logit.io/log*/_search/?apikey="+api_key
+            payload = '{"size":20,"sort":[{"@timestamp":{"order":"desc","unmapped_type":"boolean"}}],"aggs":{"2":{"date_histogram":{"field":"@timestamp","fixed_interval":"30m","time_zone":"Asia/Bangkok","min_doc_count":1}}},"query":{"bool":{"must":[],"filter":[{"match_all":{}}]}}}'
+            res = requests.post(headers={"content-type":"application/json"})
+            log_json = json.loads(res.text)
+            logs=[]
+            if (not log_json['timed_out']):
+                for i in log_json['hits']['hits']:
+                    logs.append(i['_source'])
+            return Response({"res":logs}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, npm, *args, **kwargs):
         try:
